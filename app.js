@@ -3,19 +3,36 @@ const app = express();
 require('dotenv').config();
 
 // all routes
-const routerA = require('./src/routes/adminRouter')
+const routerStudent = require('./src/routes/studentRouter')
 const routerTeacher = require('./src/routes/teacherRouter')
-const routerFile = require('./src/routes/fileuploadeRouter')
+const routerAdmin = require('./src/routes/studentRouter')
+
+const routerLogin = require('./src/routes/loginRouter')
+const routerChangePImage = require('./src/routes/profileImageChangeRouter')
+const routerFileUpload = require('./src/routes/fileuploadeRouter')
+
+const routerClassRoutine = require('./src/routes/classRoutinRouter')
+const routerSyllabus = require('./src/routes/syllabusRouter')
+const routerMcqQuestion = require('./src/routes/mcqQuestionRouter')
+
+// const routerClass = require('./src/routes/classRouter')
 
 const mongoose = require('mongoose');
-
 // require all routers 
-
 app.use(express.json()); 
 
-app.use('/student', routerA)
+app.use('/admin', routerAdmin)
+app.use('/student', routerStudent)
 app.use('/teacher', routerTeacher)
-app.use('/upload', routerFile)
+
+app.use('/login', routerLogin)
+app.use('/changePImage', routerChangePImage)
+app.use('/upload', routerFileUpload)
+
+app.use('/class-routin', routerClassRoutine)
+app.use('/syllabus', routerSyllabus)
+app.use('/syllabus', routerMcqQuestion)
+
 
 app.get('/', (req, res) => {
     res.send(`<h1> I am from root </h1>`)
@@ -24,8 +41,6 @@ app.get('/', (req, res) => {
 app.get('*', (req, res) => {
     res.send(`<h1> Enter right url </h1>`)
 })
-
-
 // Database connection 
 const url = process.env.MONGO_URL;
 
