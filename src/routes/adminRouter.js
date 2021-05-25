@@ -17,7 +17,7 @@ const {
     viewResultController
     // questionSubmitController
 
-    } = require('../controllers/adminController')
+    } = require('../controllers/studentController')
 
     router.post('/admit',fileuploader.single('image') ,permission(['admin']), admitSingleStudentController) //fileUploader.fields([{'bookimage'}]), problem 
     router.put('/update/:id',permission(['admin','teacher']), updateStudentInfoController)

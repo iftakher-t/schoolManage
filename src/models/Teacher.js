@@ -3,27 +3,60 @@ const bcrypt = require('bcrypt')
 
 const teacherSchema = new Schema({
     firstName:String,
-    
-    firstName:String,
-
+    lastName:String,
     userName:String,
 
     userType:{ type:String, default:"teacher"},
-    
-    isActive:{ type: String, status:["Active","Inactive"], default:"Inactive" },
-    isDeleted:Boolean,
-
-    joinDate: { type: Date, default: Date.now },//yyyy-mm-dd
+    email:{ type:String, unique:true },
 
     address:{ division : String, destrict : String, upozila : String, zipcode : String,  area : String },
 
-    email:{ type:String, unique:true },
-
     password: String,
 
-    profileImage: String,
+    profileImage: {type:String, default:""},
 
-    resetLink : { String , default :'' }
+    resetLink : { String , default :'' },    
+
+    educationQualification:{  
+        degree:[
+                    {
+                        degreeName: String,
+                        result: String,
+                        season: String,
+                        passingYears: String,
+                        institution: String
+                    }
+                ]
+                },
+
+    officalInfo:{
+        joinDate: { type: Date, default: Date.now },//yyyy-mm-dd
+        salary: {
+            type:String
+        },
+        department:{
+            type: String
+        },
+        isActive: {
+            type: Boolean,
+            default: true
+        },
+        isDeleted:{
+            type: Boolean,
+            default: false
+        }
+    },
+
+    modification:{
+        createdAt:{
+            type: Date,
+            default: Date.now
+        },
+        updatedAt:{
+            type:Date,
+            default: Date.now
+        }
+    }
     
 })
 
