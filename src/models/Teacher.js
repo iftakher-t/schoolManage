@@ -12,6 +12,7 @@ const teacherSchema = new Schema({
     address:{ division : String, destrict : String, upozila : String, zipcode : String,  area : String },
 
     password: String,
+     gender: String,
 
     profileImage: {type:String, default:""},
 

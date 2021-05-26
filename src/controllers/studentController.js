@@ -7,9 +7,18 @@ const Student = require('../models/Students')
 
 const admitSingleStudentController = async (req ,res)=>{
     try{
+        const splitedDateOfBirth = personalInfo.dateOfBirth.split("-")
+        const birthYear =  splitedDateOfBirth[0]
+        const birthDate = splitedDateOfBirth[splitedDateOfBirth.length - 1]
+
+        //format of user id is (BirthDate - userID - BirthYear)
+        const generateUserId = `${birthDate}${userId}${birthYear}` //get the new user id
+        
+        //creat the student
 
         const student = new Student( {
             ...req.body,
+            userId: generateUserId,
             profileImage : req.file.fileName
             }
             )

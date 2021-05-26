@@ -9,7 +9,7 @@ const studentSchema = new Schema({
     lastName: String,
     FathersName: String,
     MothersName: String,
-    sex: String,
+    gender: String,
     email: { type: String, unique: true , trim: true },
     dateOfBirth:{ type: Date},
     contact:{
@@ -28,16 +28,10 @@ const studentSchema = new Schema({
 
     isActive:{ type: Boolean, default:true },
     isDeleted:{ type: Boolean, default:false },
-
-    result: [
-        { firstTerm : String }, 
-        { secondTerm : String }, 
-        { thirdTerm : String }
-    ],
-    password:String,
+    
+    password:{type:String, default:""},
 
     // academicInfo
-
         admitionDate: { type: Date, default: Date.now },//yyyy-mm-dd
         className:{type:String, default:""},
         roll:{type:String, default:""},
@@ -59,7 +53,7 @@ const studentSchema = new Schema({
                 examDate: {
                     type: Date,
                     default: Date.now
-                },
+                        },
                 result:{
                     totalMark:{
                        type: Number,
