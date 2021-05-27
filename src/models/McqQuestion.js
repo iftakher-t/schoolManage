@@ -1,7 +1,7 @@
 const {Schema, model}= require('mongoose')
 const bcrypt = require('bcrypt')
 
-const teacherSchema = new Schema({
+const mcqSchema = new Schema({
     firstName:String,
     
     firstName:String,
@@ -27,26 +27,4 @@ const teacherSchema = new Schema({
     
 })
 
-teacherSchema.pre('save', function(next){
-    var teacher = this;
-    if(this.isModified('password') || this.isNew){
-        bcrypt.genSalt(10,function(err, salt){
-            if(err){
-                return next(err)
-            }
-            bcrypt.hash(teacher.password, salt , function(err,hash){
-                if(err){
-                    return next(err)
-                }
-                if(hash){
-                    teacher.password = hash
-                }
-                next()
-            })
-        })
-    }else{
-        next()
-    }
-}) 
-
-module.exports = model('Teacher',teacherSchema)
+module.exports = model('Mcq',mcqSchema)

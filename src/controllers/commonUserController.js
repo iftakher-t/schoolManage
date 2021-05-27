@@ -12,11 +12,11 @@ const password = process.env.PASSWORD //get the password of auth account's for n
 
 const {
     passwordValidation:passwordValidation, 
-    resetPasswordValidation } = require("../validation/userValidator") //  change it to passwordValidator
+    resetPasswordValidation } = require("../../validator/userValidator") //  change it to passwordValidator
 
+const Admin = require("../models/Admin")
 const Student = require("../models/Student") 
 const Teacher = require("../models/Teacher")
-const Admin = require("../models/Admin")
 const User = require("../models/User")
 
 //login controller 
@@ -26,14 +26,7 @@ const loginController = async (req, res) => {
         if(userType === "admin"){    //admin login controller
             const isValidUser = await Admin.findOne(
                 {
-                    $and: [
-                        {
-                            userId
-                        },
-                        {
-                            "officalInfo.isDeleted": false
-                        }
-                    ]
+                    $and: [ { userId }, { "officalInfo.isDeleted": false }]
                 }
             ) //find the user
             if(isValidUser){

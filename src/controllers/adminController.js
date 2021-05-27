@@ -1,7 +1,7 @@
-const Teacher = require('../models/Teacher')
+const Admin = require('../models/Admin')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const nodemailer = require('nodemailer')
+
 const { userValidator ,options } = require('../../validator/userValidator')
 
 

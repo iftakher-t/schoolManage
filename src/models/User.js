@@ -1,8 +1,8 @@
 const {Schema, model}= require('mongoose')
 const bcrypt = require('bcrypt')
 
-const syllabusSchema = new Schema({
-    className:String,
+const userSchema = new Schema({
+    userType:String,
 
     isDeleted:{ type: Boolean, default:false },
 
@@ -10,4 +10,4 @@ const syllabusSchema = new Schema({
     
 })
 
-module.exports = model('Syllabus',syllabusSchema)
+module.exports = model('User',userSchema)

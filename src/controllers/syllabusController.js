@@ -1,79 +1,35 @@
-const Teacher = require('../models/Teacher')
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-const nodemailer = require('nodemailer')
-const { userValidator ,options } = require('../../validator/userValidator')
+const Syllabus = require('../models/Syllabus')
 
+const { syllabusValidation ,options } = require('../../validator/syllabusValidation')
 
-const createTeacherController = async (req,res)=>{
-    try{
-        const {error, value }= userValidator.validate(req.body)
-        if(error){
-            res.status(500).json({
-                result: value,
-                message: 'validation error',
-                Error: error.details[0].message
-            })
-        }else{
-        const {userName, userType, isActive, email, password , profileImage } = req.body
-
-        const teacher = new Teacher({ userName, userType, isActive, email, password , profileImage })
-
-        const result = await teacher.save()
-            res.status(200).json({
-                result: result,
-                message: 'teacher saved successfully'
-            })
-        }
-    }catch(err){
-        console.log(err)
-        res.status(500).json({
-            message : "server error ct",
-            err
+//creat a syllabus
+const creatSyllabusController = async (req, res) => {
+    const {error} = syllabusValidation.validate(req.body)
+    if(error){
+        res.json({
+            message: "syllabus validation error",
+            error
         })
-    }
-}
-
-const teacherLoginController = async (req,res)=>{
-    try{
-        const {email, password } = req.body
-        const secretKey = process.env.SECRET_KEY
-        const user = await Teacher.findOne( { email })
-        if(user){
-            const isValid = await bcrypt.compare( password , user.password)
-        let data = {
-            userName: user.userName,
-            userType : user.userType
-        }
-        const token = jwt.sign( data , secretKey , {expiresIn : '1h'} )
-        if(isValid){
-            res.status(200).json({
-                message: 'Login successfully',
-                token
-            })
-        }else{
-            res.json({ message: 'Password does not match'
-            })
-        }
     }else{
-        res.json({ message: 'user not found'
-        })
-    }
-
+        
+        const newSyllabus = new Syllabus({...req.body}) //create the new syllabus
+        
+        const data = await newSyllabus.save() //save the data into the database
+        if(data){
+            res.status(201).json({
+                message: "new syllabus has been created",
+            })
+        }else{
+            res.json({
+                message: "Syllabus creation failed"
+            })
         }
-    catch(err){
-        console.log(err)
-        res.status(500).json({
-            message : "server error  t log",
-            err
-        })
     }
-}
+} 
 
-
-const updateTeacherInfoController = async (req,res)=>{
+const updateSyllabusController = async (req,res)=>{
     try{
-        await Teacher.findByIdAndUpdate(
+        await Syllabus.findByIdAndUpdate(
             {_id : req.params.id},
             {$set: req.body},
             {multi : true}
@@ -91,12 +47,12 @@ const updateTeacherInfoController = async (req,res)=>{
     }
 }
 
-const TeacherdeleteController = async (req,res)=>{
+const SyllabusdeleteController = async (req,res)=>{
     try{
-        const data = await Teacher.findOneAndUpdate(
+        const data = await Syllabus.findOneAndUpdate(
             {_id:req.params.id},
             { $set:{
-                isActive : false
+                isDeleted : true,
                 }
             }
             )
@@ -111,38 +67,12 @@ const TeacherdeleteController = async (req,res)=>{
     }
 }
 
-const changeactivityController = async (req,res)=>{
+const allSyllabusGetController = async (req,res)=>{
     try{
-        const id = req.params.id
-
-        const data = await Teacher.findOneAndUpdate(
-            {_id:id},
-
-            {
-                $set: {
-                    isActive: true
-                    }
-            }
-            )
-        
-        return res.json({
-            message: 'Activity updated success',
-            result : data
-        })
-    }catch(err){
-        res.status(500).json({
-            message : "server error",
-            err
-        })
-    }
-}
-
-const allTeacherGetController = async (req,res)=>{
-    try{
-        const teacher = await Teacher.find()
-        if(teacher.length){
+        const sylabus = await Syllabus.find()
+        if(sylabus.length){
             res.status(200).json({
-                result: teacher 
+                result: sylabus 
             })
         }else{
             res.status(200).json({
@@ -157,39 +87,11 @@ const allTeacherGetController = async (req,res)=>{
     }
 }
 
-const profileImageChangeController = async (req ,res)=>{
-    try{
-        const update = await Teacher.findByIdAndUpdate(
-            {_id:req.params.id},
-            { $set:{
-                profileImage:req.file.filename
-                }
-            });
-         res.status(200).json({
-                message: 'profileImage updated success',
-                result : update
-            })
-
-    }catch(err){
-        res.status(500).json({
-            message : "server error up p i",
-            err
-        })
-    }
-}
-
 
 module.exports = { 
-    createTeacherController,
-    updateTeacherInfoController,
-    TeacherdeleteController,
-    changeactivityController,
-    allTeacherGetController,
-    //--------------------
-
-    profileImageChangeController,
-    teacherLoginController,
-    // createAQuestionController,
-    //resultGetController
+    creatSyllabusController,
+    updateSyllabusController,
+    SyllabusdeleteController,
+    allSyllabusGetController,
 
             }

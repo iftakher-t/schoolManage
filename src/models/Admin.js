@@ -1,19 +1,16 @@
 const {Schema, model}= require('mongoose')
 const bcrypt = require('bcrypt')
 
-const teacherSchema = new Schema({
+const adminSchema = new Schema({
     firstName:String,
     
     firstName:String,
 
     userName:String,
 
-    userType:{ type:String, default:"teacher"},
+    userType:{ type:String, default:"admin"},
     
-    isActive:{ type: String, status:["Active","Inactive"], default:"Inactive" },
-    isDeleted:Boolean,
-
-    joinDate: { type: Date, default: Date.now },//yyyy-mm-dd
+    isDeleted:{ type:Boolean, default:false},
 
     address:{ division : String, destrict : String, upozila : String, zipcode : String,  area : String },
 
@@ -27,19 +24,19 @@ const teacherSchema = new Schema({
     
 })
 
-teacherSchema.pre('save', function(next){
+adminSchema.pre('save', function(next){
     var teacher = this;
     if(this.isModified('password') || this.isNew){
         bcrypt.genSalt(10,function(err, salt){
             if(err){
                 return next(err)
             }
-            bcrypt.hash(teacher.password, salt , function(err,hash){
+            bcrypt.hash(admin.password, salt , function(err,hash){
                 if(err){
                     return next(err)
                 }
                 if(hash){
-                    teacher.password = hash
+                    admin.password = hash
                 }
                 next()
             })
@@ -49,4 +46,4 @@ teacherSchema.pre('save', function(next){
     }
 }) 
 
-module.exports = model('Teacher',teacherSchema)
+module.exports = model('Admin',adminSchema)

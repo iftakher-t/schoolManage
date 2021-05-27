@@ -3,12 +3,11 @@ const app = express();
 require('dotenv').config();
 
 // all routes
+const routerAdmin = require('./src/routes/AdminRouter')
 const routerStudent = require('./src/routes/studentRouter')
 const routerTeacher = require('./src/routes/teacherRouter')
-const routerAdmin = require('./src/routes/studentRouter')
 
-const routerLogin = require('./src/routes/loginRouter')
-const routerChangePImage = require('./src/routes/profileImageChangeRouter')
+const commonUser = require('./src/routes/commonUserRouter')
 const routerFileUpload = require('./src/routes/fileuploadeRouter')
 
 const routerClassRoutine = require('./src/routes/classRoutinRouter')
@@ -25,8 +24,7 @@ app.use('/admin', routerAdmin)
 app.use('/student', routerStudent)
 app.use('/teacher', routerTeacher)
 
-app.use('/login', routerLogin)
-app.use('/changePImage', routerChangePImage)
+app.use('/login', commonUser)
 app.use('/upload', routerFileUpload)
 
 app.use('/class-routin', routerClassRoutine)

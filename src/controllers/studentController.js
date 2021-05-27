@@ -1,8 +1,7 @@
 // const { required } = require("joi")
 
 
-const Student = require('../models/Students')
-
+const Student = require('../models/Student')
 
 
 const admitSingleStudentController = async (req ,res)=>{
