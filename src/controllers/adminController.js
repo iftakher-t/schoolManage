@@ -1,195 +1,225 @@
-const Admin = require('../models/Admin')
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-
-const { userValidator ,options } = require('../../validator/userValidator')
+// const { required } = require("joi")
 
 
-const createTeacherController = async (req,res)=>{
+const Student = require('../models/Student')
+
+
+const admitSingleStudentController = async (req ,res)=>{
     try{
-        const {error, value }= userValidator.validate(req.body)
-        if(error){
-            res.status(500).json({
-                result: value,
-                message: 'validation error',
-                Error: error.details[0].message
-            })
-        }else{
-        const {userName, userType, isActive, email, password , profileImage } = req.body
+        const splitedDateOfBirth = personalInfo.dateOfBirth.split("-")
+        const birthYear =  splitedDateOfBirth[0]
+        const birthDate = splitedDateOfBirth[splitedDateOfBirth.length - 1]
 
-        const teacher = new Teacher({ userName, userType, isActive, email, password , profileImage })
+        //format of user id is (BirthDate - userID - BirthYear)
+        const generateUserId = `${birthDate}${userId}${birthYear}` //get the new user id
+        
+        //creat the student
 
-        const result = await teacher.save()
-            res.status(200).json({
-                result: result,
-                message: 'teacher saved successfully'
+        const student = new Student( {
+            ...req.body,
+            userId: generateUserId,
+            profileImage : req.file.fileName
+            }
+            )
+
+        let data = await student.save();
+            res.status(201).json({
+                message: 'student added successfully',
             })
-        }
+    
     }catch(err){
-        console.log(err)
-        res.status(500).json({
-            message : "server error ct",
-            err
-        })
+        res.status(500).json({ err })
     }
 }
 
-const teacherLoginController = async (req,res)=>{
-    try{
-        const {email, password } = req.body
-        const secretKey = process.env.SECRET_KEY
-        const user = await Teacher.findOne( { email })
-        if(user){
-            const isValid = await bcrypt.compare( password , user.password)
-        let data = {
-            userName: user.userName,
-            userType : user.userType
-        }
-        const token = jwt.sign( data , secretKey , {expiresIn : '1h'} )
-        if(isValid){
-            res.status(200).json({
-                message: 'Login successfully',
-                token
-            })
-        }else{
-            res.json({ message: 'Password does not match'
-            })
-        }
-    }else{
-        res.json({ message: 'user not found'
-        })
-    }
-
-        }
-    catch(err){
-        console.log(err)
-        res.status(500).json({
-            message : "server error  t log",
-            err
-        })
-    }
-}
-
-
-const updateTeacherInfoController = async (req,res)=>{
-    try{
-        await Teacher.findByIdAndUpdate(
-            {_id : req.params.id},
+const updateStudentInfoController = async (req ,res)=>{
+    try{ 
+        const data = await Student.findByIdAndUpdate(
+            { _id:req.params.id },
             {$set: req.body},
             {multi : true}
             )
-        
-        res.status(200).json({
-            message: 'teachers data updated successfully ',
-            updatedResult: req.body // show new data (req.body)
-        })
+
+            res.status(200).json({
+                message: 'students data updated successfully',
+                result : data
+            })
+
     }catch(err){
         res.status(500).json({
-            message : "server error",
+            message : "server error su",
             err
         })
     }
 }
 
-const TeacherdeleteController = async (req,res)=>{
+const studentDeleteController = async (req ,res)=>{  //delete temporary
     try{
-        const data = await Teacher.findOneAndUpdate(
+        const data = await Student.findByIdAndUpdate(
             {_id:req.params.id},
             { $set:{
-                isActive : false
+                isDeleted : true
                 }
             }
             )
-        res.status(200).json({
-            result: data
-        })
-    }catch(err){
-        res.status(500).json({
-            message : "server error",
-            err
-        })
-    }
-}
-
-const changeactivityController = async (req,res)=>{
-    try{
-        const id = req.params.id
-
-        const data = await Teacher.findOneAndUpdate(
-            {_id:id},
-
-            {
-                $set: {
-                    isActive: true
-                    }
-            }
-            )
-        
-        return res.json({
-            message: 'Activity updated success',
-            result : data
-        })
-    }catch(err){
-        res.status(500).json({
-            message : "server error",
-            err
-        })
-    }
-}
-
-const allTeacherGetController = async (req,res)=>{
-    try{
-        const teacher = await Teacher.find()
-        if(teacher.length){
             res.status(200).json({
-                result: teacher 
+                result : data
+            })
+
+    }catch(err){
+        res.status(500).json({
+            message : "server error sd",
+            err
+        })
+    }
+}
+
+const changeStudentActivityController = async (req ,res)=>{
+    try{
+        const data = await Student.findByIdAndUpdate(
+            {_id:req.params.id},
+            { $set:{
+                isActive : "Active"
+                }
+            }, {new:true, useFindAndModify: false });
+
+            res.status(200).json({
+                message: 'Activity updated success',
+                result : data
+            })
+
+    }catch(err){
+        res.status(500).json({
+            message : "server error ca",
+            err
+        })
+    }
+}
+
+const studentProfileViewController = async (req ,res)=>{
+    try{
+        const student = await Student.findById(
+            {_id:req.params.id})
+
+            res.status(200).json({
+                result : student
+            })
+
+    }catch(err){
+        res.status(500).json({
+            message : "server error pv",
+            err
+        })
+    }
+}
+
+// -------------------
+
+const allStudentGetController = async (req,res)=>{
+    try{
+        const student = await Student.find()
+        if(student.length){
+            res.status(200).json({
+                result: student 
             })
         }else{
             res.status(200).json({
-                message: 'No teacher yet'
+                message: 'No student yet'
             })
         }
     }catch(err){
+        console.log(err),
         res.status(500).json({
-            message : "server error allteacher",
+            message : "server error from all student",
             err
         })
     }
 }
 
-const profileImageChangeController = async (req ,res)=>{
+const classwiseStudentGetController = async (req,res)=>{
     try{
-        const update = await Teacher.findByIdAndUpdate(
-            {_id:req.params.id},
-            { $set:{
-                profileImage:req.file.filename
-                }
-            });
-         res.status(200).json({
-                message: 'profileImage updated success',
-                result : update
+    //    let { Class } = req.query
+        const student = await Student.find( req.query )
+        if(student.length){
+            res.status(200).json({
+                result: student
             })
-
+        }else{
+            res.status(200).json({
+                message: 'No student yet'
+            })
+        }
     }catch(err){
+        console.log(err)
         res.status(500).json({
-            message : "server error up p i",
+            message : "server error cw",
+            err
+        })
+    }
+}
+
+const viewResultController = async (req,res)=>{
+    try{
+        const student = await Student.findById({_id: req.params.id})
+        console.log(student.result)
+        if(student.result){
+            res.status(200).json({
+                result: student.result 
+            })
+        }else{
+            res.status(200).json({
+                message: 'No Result yet'
+            })
+        }
+    }catch(err){
+        console.log(err),
+        res.status(500).json({
+            message : "server error from result",
             err
         })
     }
 }
 
 
-module.exports = { 
-    createTeacherController,
-    updateTeacherInfoController,
-    TeacherdeleteController,
-    changeactivityController,
-    allTeacherGetController,
-    //--------------------
+module.exports = {
+    admitSingleStudentController,
+    updateStudentInfoController,
+    studentDeleteController,
+    changeStudentActivityController,
+    studentProfileViewController,
 
-    profileImageChangeController,
-    teacherLoginController,
-    // createAQuestionController,
-    //resultGetController
+    // ---------------------
+    // profileImageChangeController, // this is from commonUserController
+    allStudentGetController,
 
-            }
+    classwiseStudentGetController,
+    viewResultController
+    // questionSubmitController
+}
+
+// const paginationController = async (req, res, next)=>{
+//     try{
+//         let { page , size} =req.query
+
+//         if(!page){
+//             page= 1
+//         }
+//         if(!size){
+//             size= 5
+//         }
+//         const limit = parseInt(size)
+//         const skip = (page - 1) * size
+
+//         // let { page } =req.params
+//         // const limit = 5
+//         // const skip =(page -1) * limit
+
+//         const users = await User.find().limit(limit).skip(skip)
+//         res.send(users)
+//     }catch(err){
+//         res.status(500).json({
+//             message : "server error from filter",
+//             err
+//         })
+//     }
+// }

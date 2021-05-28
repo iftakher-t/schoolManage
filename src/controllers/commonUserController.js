@@ -12,7 +12,7 @@ const password = process.env.PASSWORD //get the password of auth account's for n
 
 const {
     passwordValidation:passwordValidation, 
-    resetPasswordValidation } = require("../../validator/userValidator") //  change it to passwordValidator
+    resetPasswordValidation } = require("../../validator/passwordValidator") 
 
 const Admin = require("../models/Admin")
 const Student = require("../models/Student") 
@@ -22,11 +22,12 @@ const User = require("../models/User")
 //login controller 
 const loginController = async (req, res) => {
     try{
-        const {userId, password, userType} = req.body //get the data from body
+        const {userId, password, userType} = req.body
+
         if(userType === "admin"){    //admin login controller
             const isValidUser = await Admin.findOne(
                 {
-                    $and: [ { userId }, { "officalInfo.isDeleted": false }]
+                    $and: [ { userId }, { "isDeleted": false }]
                 }
             ) //find the user
             if(isValidUser){
@@ -831,6 +832,30 @@ const viewOwnProfileController = async (req, res) => {
     }
 }
 
+
+// const profileImageChangeController = async (req ,res)=>{
+//     try{
+//         const data = await Student.findByIdAndUpdate(
+//             {_id:req.params.id},
+//             { $set:{
+//                 profileImage : req.file.fileName
+//                 }
+//             },
+//             {new: true, useFindAndModify: false}
+//             );
+//             res.status(200).json({
+//                 message: 'Profile Image updated success',
+//                 result : data
+//             })
+
+//     }catch(err){
+//         console.log(err)
+//         res.status(500).json({
+//             message : "server error pi",
+//             err
+//         })
+//     }
+// }
 //export part 
 module.exports = {
     loginController,

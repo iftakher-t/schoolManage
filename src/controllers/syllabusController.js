@@ -1,6 +1,6 @@
 const Syllabus = require('../models/Syllabus')
 
-const { syllabusValidation ,options } = require('../../validator/syllabusValidation')
+const { syllabusValidation ,options } = require('../../validator/syllabusValidator')
 
 //creat a syllabus
 const creatSyllabusController = async (req, res) => {

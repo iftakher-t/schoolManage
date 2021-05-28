@@ -70,7 +70,6 @@ const teacherLoginController = async (req,res)=>{
     }
 }
 
-
 const updateTeacherInfoController = async (req,res)=>{
     try{
         await Teacher.findByIdAndUpdate(

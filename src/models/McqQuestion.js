@@ -1,30 +1,46 @@
-const {Schema, model}= require('mongoose')
-const bcrypt = require('bcrypt')
+const mongoose = require("mongoose")
+const Schema = mongoose.Schema
 
-const mcqSchema = new Schema({
-    firstName:String,
-    
-    firstName:String,
-
-    userName:String,
-
-    userType:{ type:String, default:"teacher"},
-    
-    isActive:{ type: String, status:["Active","Inactive"], default:"Inactive" },
-    isDeleted:Boolean,
-
-    joinDate: { type: Date, default: Date.now },//yyyy-mm-dd
-
-    address:{ division : String, destrict : String, upozila : String, zipcode : String,  area : String },
-
-    email:{ type:String, unique:true },
-
-    password: String,
-
-    profileImage: String,
-
-    resetLink : { String , default :'' }
-    
+const mcqQuestionSchema = new Schema ({
+    className: {
+        type: String,
+        trim: true,
+        required: true
+    },
+    subject: {
+        type: String,
+        trim: true,
+        required: true
+    },
+    examType: {
+        type: String
+    },
+    questionSet: [
+        {
+            questionNo: {
+                type: Number,
+                required: true
+            },
+            question: {
+                type: String,
+                trim: true,
+                 required: true
+            },
+            originalAnswer:{
+                type: String,
+                trim: true,
+                 required: true
+            },
+            marks: {
+                type: Number,
+                required: true
+            }
+        }
+    ],
+    response: {
+        type: Number,
+        default: 0
+    }
 })
 
-module.exports = model('Mcq',mcqSchema)
+module.exports = mongoose.model("quiestion", mcqQuestionSchema)

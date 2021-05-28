@@ -2,17 +2,17 @@ const router = require('express').Router()
 const fileuploader = require('../../middleware/fileUploader')
   
 const { 
-    createSyllabusController,
+    creatSyllabusController,
     updateSyllabusController,
     SyllabusdeleteController,
     allSyllabusGetController,
 
-                } = require('../controllers/teacherController')
+                } = require('../controllers/syllabusController')
 
     const Auth = require('../../middleware/auth')
     const { permission } = require('../../middleware/permission')
 
-    // router.post('/create', createSyllabusController) 
+    router.post('/create', creatSyllabusController) 
     // router.put('/update/:id', Auth, updateSyllabusController)
     // router.delete('/delete/:id', Auth, permission(['admin','teacher']), SyllabusdeleteController)  // , permission([admin]) problem
     // router.delete('/delete-permanent/:id', Auth, permission(['admin','teacher']), SyllabusdeleteController) // , permission([admin]) problem

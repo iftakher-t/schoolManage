@@ -6,7 +6,7 @@ const userSchema = new Schema({
 
     isDeleted:{ type: Boolean, default:false },
 
-   createdDate: { type: Date, default: Date.now },//yyyy-mm-dd
+    createdDate: { type: Date, default: Date.now },//yyyy-mm-dd
     
 })
 

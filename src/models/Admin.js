@@ -3,25 +3,17 @@ const bcrypt = require('bcrypt')
 
 const adminSchema = new Schema({
     firstName:String,
-    
     firstName:String,
-
     userName:String,
-
     userType:{ type:String, default:"admin"},
-    
     isDeleted:{ type:Boolean, default:false},
-
-    address:{ division : String, destrict : String, upozila : String, zipcode : String,  area : String },
-
     email:{ type:String, unique:true },
-
-    password: String,
-
+    password: { String , default :"" },
     profileImage: String,
-
-    resetLink : { String , default :'' }
-    
+    resetLink : { String , default :"" },
+    address:{ division : String, destrict : String, upozila : String, 
+              zipcode : String,  area : String },
+        
 })
 
 adminSchema.pre('save', function(next){
