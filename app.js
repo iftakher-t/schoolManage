@@ -24,7 +24,7 @@ app.use('/admin', routerAdmin)
 app.use('/student', routerStudent)
 app.use('/teacher', routerTeacher)
 
-app.use('/login', commonUser)
+app.use('/common', commonUser)
 app.use('/upload', routerFileUpload)
 
 app.use('/class-routin', routerClassRoutine)

@@ -22,7 +22,8 @@ const User = require("../models/User")
 //login controller 
 const loginController = async (req, res) => {
     try{
-        const {userId, password, userType} = req.body
+        // const {userId, email, password, userType} = req.body
+        const { email, password, userType} = req.body
 
         if(userType === "admin"){    //admin login controller
             const isValidUser = await Admin.findOne(
@@ -60,14 +61,7 @@ const loginController = async (req, res) => {
         } else if(userType == "student"){ //student login controller
             const isValidUser = await Student.findOne(
                  {
-                    $and: [
-                        {
-                            userId
-                        },
-                        {
-                            "academicInfo.isDeleted": false
-                        }
-                    ]
+                    $and: [ { userId }, {"academicInfo.isDeleted": false } ]
                 }
             ) //find the user
             if(isValidUser){
@@ -97,18 +91,7 @@ const loginController = async (req, res) => {
                 })
             }
         }else if(userType == "teacher"){   //teacher login controller
-            const isValidUser = await Teacher.findOne(
-                 {
-                    $and: [
-                        {
-                            userId
-                        },
-                        {
-                            "officalInfo.isDeleted": false
-                        }
-                    ]
-                }
-            ) //find the user
+            const isValidUser = await Teacher.findOne( {email} ) //find the user
             if(isValidUser){
                 const user = isValidUser //get the user
                 const isPasswordMatch = await bcrypt.compare(password, user.password) //check is the password have been matched or not
@@ -137,7 +120,7 @@ const loginController = async (req, res) => {
             }
         }else{
             res.json({
-                message: "user id or user type invalid"
+                message: "email or user type invalid"
             })
         }
     }
@@ -149,7 +132,6 @@ const loginController = async (req, res) => {
     }
 }
 
-//update password controller
 const updatePasswordController = async (req, res) => {
     try{
         const { id } = req.params; //get the id from params
@@ -324,7 +306,6 @@ const updatePasswordController = async (req, res) => {
     }
 }
 
-//forgot password  controller
 const forgotPasswordController = async (req, res) => {
     try{
         let recoveryToken //for send this token in to the user email
@@ -468,7 +449,6 @@ const forgotPasswordController = async (req, res) => {
     }
 }
 
-//reset password controller
 const resetPasswordController = async (req, res) => {
     try{
         const {error} = resetPasswordValidation.validate(req.body)
@@ -621,7 +601,6 @@ const resetPasswordController = async (req, res) => {
     }
 }
 
-//update profile picture
 const updateProfilePictureController = async (req, res) => {
     try{
          const token = req.header("Authorization") //get the login token
@@ -769,7 +748,6 @@ const updateProfilePictureController = async (req, res) => {
     }
 }
 
-//view own profile
 const viewOwnProfileController = async (req, res) => {
     try{
        const headerToken = req.header("Authorization")  //get the token from body header
@@ -831,7 +809,6 @@ const viewOwnProfileController = async (req, res) => {
         })
     }
 }
-
 
 // const profileImageChangeController = async (req ,res)=>{
 //     try{

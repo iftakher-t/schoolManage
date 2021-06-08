@@ -5,17 +5,15 @@ const teacherSchema = new Schema({
     firstName:String,
     lastName:String,
     userName:String,
-
     userType:{ type:String, default:"teacher"},
     email:{ type:String, unique:true },
 
     address:{ division : String, destrict : String, upozila : String, zipcode : String,  area : String },
 
     password: String,
-     gender: String,
+    gender: String,
 
     profileImage: {type:String, default:""},
-
     resetLink : { String , default :'' },    
 
     educationQualification:{  

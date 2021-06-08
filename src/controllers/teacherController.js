@@ -15,10 +15,8 @@ const createTeacherController = async (req,res)=>{
                 Error: error.details[0].message
             })
         }else{
-        const {userName, userType, isActive, email, password , profileImage } = req.body
 
-        const teacher = new Teacher({ userName, userType, isActive, email, password , profileImage })
-
+        const teacher = new Teacher(req.body)
         const result = await teacher.save()
             res.status(200).json({
                 result: result,
@@ -28,43 +26,7 @@ const createTeacherController = async (req,res)=>{
     }catch(err){
         console.log(err)
         res.status(500).json({
-            message : "server error ct",
-            err
-        })
-    }
-}
-
-const teacherLoginController = async (req,res)=>{
-    try{
-        const {email, password } = req.body
-        const secretKey = process.env.SECRET_KEY
-        const user = await Teacher.findOne( { email })
-        if(user){
-            const isValid = await bcrypt.compare( password , user.password)
-        let data = {
-            userName: user.userName,
-            userType : user.userType
-        }
-        const token = jwt.sign( data , secretKey , {expiresIn : '1h'} )
-        if(isValid){
-            res.status(200).json({
-                message: 'Login successfully',
-                token
-            })
-        }else{
-            res.json({ message: 'Password does not match'
-            })
-        }
-    }else{
-        res.json({ message: 'user not found'
-        })
-    }
-
-        }
-    catch(err){
-        console.log(err)
-        res.status(500).json({
-            message : "server error  t log",
+            message : "server error create teacher",
             err
         })
     }
@@ -187,7 +149,6 @@ module.exports = {
     //--------------------
 
     profileImageChangeController,
-    teacherLoginController,
     // createAQuestionController,
     //resultGetController
 
