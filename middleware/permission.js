@@ -4,7 +4,7 @@ const permission = (userRole) => {
 
         return function (req, res, next){
 
-            const token  = req.header("Authorization") //get the token from body input
+            const token  = req.header("Authorization") //get the token from body input header
             if(!token) return res.status(401).json({
                 message : 'Unauthorized user'
             })
@@ -12,7 +12,7 @@ const permission = (userRole) => {
             try{
                 const decode = json_decode(token) //decode the token data
                 const{ userType } = decode
-                const verified = userRoles.includes(userType)
+                const verified = userRole.includes(userType) //chech userType from db/ token
                 if(verified) next()
                 
                 else{

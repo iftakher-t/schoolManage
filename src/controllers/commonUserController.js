@@ -6,7 +6,7 @@ const jwtDecode = require("jwt-decode")
 const nodemailer = require("nodemailer")
 const fileSystem = require("fs")
 
-const securityKey = process.env.SECRET_KEY //get the security code from .env file
+const securityKey = process.env.JWT_KEY //get the security code from .env file
 const userName = process.env.USER //get the user for nodemailer
 const password = process.env.PASSWORD //get the password of auth account's for nodemailer
 
@@ -91,7 +91,9 @@ const loginController = async (req, res) => {
                 })
             }
         }else if(userType == "teacher"){   //teacher login controller
-            const isValidUser = await Teacher.findOne( {email} ) //find the user
+
+            const isValidUser = await Teacher.findOne({ $and:[{email},{"officalInfo.isDeleted":false} ]}) //find the user
+
             if(isValidUser){
                 const user = isValidUser //get the user
                 const isPasswordMatch = await bcrypt.compare(password, user.password) //check is the password have been matched or not
@@ -247,13 +249,12 @@ const updatePasswordController = async (req, res) => {
                         })
                     }
                 }else if(userType == "teacher"){   //work on user type teacher
+                    console.log(id)
                     const isValidUser = await Teacher.findOne({_id: id}) //find the user
-                    if(isValidUser){
-                        //is the old password is right or wrong just check it
+                    if(isValidUser){ //is the old password is right or wrong just check it
                         const user = isValidUser
                         const isOldPassword = await bcrypt.compare(oldPassword, user.password ) //check is it valid old password or not
-                        if(isOldPassword){
-                            //check is the old password is same as new one
+                        if(isOldPassword){ //check is the old password is same as new one
                             const isSamePassword = await bcrypt.compare(newPassword, user.password) //check is it same as database store password or not
                             if(isSamePassword){
                                 res.status(406).json({
@@ -261,13 +262,10 @@ const updatePasswordController = async (req, res) => {
                                 })
                             }else{
                                 //get the new password and update it into the data base
-                                const isUpdated = await Teacher.findByIdAndUpdate(
-                                    {_id: id},
-                                    {
-                                        $set: {
-                                            password: hashedNewPassword //change the new password
+                                const isUpdated = await Teacher.findByIdAndUpdate( {_id: id},
+                                    { $set: { password: hashedNewPassword //change the new password
                                         },
-                                        $currentDate:{
+                                      $currentDate:{
                                             "modification.updatedAt": true //update the updateAt field
                                         }
                                     },

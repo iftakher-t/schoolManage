@@ -43,7 +43,10 @@ app.get('*', (req, res) => {
 const url = process.env.MONGO_URL;
 
 mongoose.connect(url, {
-    useNewUrlParser: true, useUnifiedTopology: true, useCreateIndex: true
+    useNewUrlParser: true, 
+    useUnifiedTopology: true, 
+    useCreateIndex: true ,
+    useFindAndModify: false 
     })
     .then(() => {
         console.log('mongodb server connected...')

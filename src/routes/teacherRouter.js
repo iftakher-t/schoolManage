@@ -20,8 +20,8 @@ const {
     const {permission} = require('../../middleware/permission')
 
     router.post('/register',fileuploader.single('image'), createTeacherController) 
-    router.put('/update/:id', Auth, updateTeacherInfoController)
-    router.delete('/delete/:id', Auth,permission(['admin','teacher']), TeacherdeleteController)  // , permission([admin]) problem
+    router.put('/update/:id', Auth, permission(['admin','teacher']), updateTeacherInfoController)
+    router.delete('/delete/:id', Auth, permission(['admin','teacher']), TeacherdeleteController)  // , permission([admin]) problem
     router.delete('/delete-permanent/:id', Auth, permission(['admin','teacher']), TeacherdeleteController) // , permission([admin]) problem
     router.put('/address-update/:id', Auth, permission(['admin']), changeactivityController)
     router.get('/allteacher', allTeacherGetController) // permission(['admin']),
