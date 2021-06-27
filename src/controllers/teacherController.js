@@ -35,10 +35,10 @@ const createTeacherController = async (req,res)=>{
 const updateTeacherInfoController = async (req,res)=>{
     try{
         await Teacher.findByIdAndUpdate(
-            {_id : req.params.id},
+            { _id : req.params.id },
 
-            {$set: req.body},
-            {multi : true}
+            { $set: req.body }, 
+            { multi : true }
             )
         
         res.status(200).json({
@@ -46,6 +46,7 @@ const updateTeacherInfoController = async (req,res)=>{
             updatedResult: req.body // show new data (req.body)
         })
     }catch(err){
+        console.log(err)
         res.status(500).json({
             message : "server error from teacher update",
             err

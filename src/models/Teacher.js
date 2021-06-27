@@ -16,8 +16,7 @@ const teacherSchema = new Schema({
     profileImage: {type:String, default:""},
     resetLink : { String , default :'' },    
 
-    educationQualification:{  
-        degree:[
+    educationQualification:[
                     {
                         degreeName: String,
                         result: String,
@@ -25,8 +24,7 @@ const teacherSchema = new Schema({
                         passingYears: String,
                         institution: String
                     }
-                ]
-                },
+                ],
 
     officalInfo:{
         joinDate: { type: Date, default: Date.now },//yyyy-mm-dd

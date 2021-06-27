@@ -249,9 +249,8 @@ const updatePasswordController = async (req, res) => {
                         })
                     }
                 }else if(userType == "teacher"){   //work on user type teacher
-                    console.log(id)
-                    const isValidUser = await Teacher.findOne({_id: id}) //find the user
-                    if(isValidUser){ //is the old password is right or wrong just check it
+                    const isValidUser = await Teacher.findOne({_id: id}) 
+                    if(isValidUser){ //check for old password is right or wrong ?
                         const user = isValidUser
                         const isOldPassword = await bcrypt.compare(oldPassword, user.password ) //check is it valid old password or not
                         if(isOldPassword){ //check is the old password is same as new one
@@ -260,17 +259,20 @@ const updatePasswordController = async (req, res) => {
                                 res.status(406).json({
                                     message: "you have insert you old password"
                                 })
-                            }else{
+                            }else{ 
+                                //check the new password and confirm newpassword are same
+                                if(newPassword !== confirmPassword){
+                                    res.json({
+                                        message: "new password and confirm newpassword should be same"
+                                    })
+                                }else{
+
                                 //get the new password and update it into the data base
                                 const isUpdated = await Teacher.findByIdAndUpdate( {_id: id},
-                                    { $set: { password: hashedNewPassword //change the new password
-                                        },
-                                      $currentDate:{
-                                            "modification.updatedAt": true //update the updateAt field
-                                        }
+                                    { $set: { password: hashedNewPassword }, //change the new password
+                                      $currentDate:{ "modification.updatedAt": true  } //update the updateAt field
                                     },
-                                    {}
-                                )
+                                    )
                                 if(isUpdated){
                                     res.json({
                                         message: "password has been changed successfully"
@@ -280,6 +282,7 @@ const updatePasswordController = async (req, res) => {
                                         message: "password update failed"
                                     })
                                 }
+                                }
                             }
                             
                         }else{
@@ -288,13 +291,12 @@ const updatePasswordController = async (req, res) => {
                             })
                         }
                     }else{
-                        console.log("User not found");
                         res.status(404).json({
                             message: "user not found"
                         })
                     }
                 }
-        }        
+            }        
     }
     catch(err){
         console.log(err)
@@ -306,29 +308,31 @@ const updatePasswordController = async (req, res) => {
 
 const forgotPasswordController = async (req, res) => {
     try{
-        let recoveryToken //for send this token in to the user email
-        let receiverEmail //this will be the receivers email
-        const {email} = req.body //get the email from body
-        const user = await User.findOne({email}) //get the user from User model
-        if(user){
-            const {userType} = user //get the type from object
-            
-            if(userType == "admin"){    //if this is an admin
-                const findUser = await Admin.findOne(
-                    {
-                        "personalInfo.email": email
-                    }
-                ) //query and find the user from data base
+        let recoveryToken //send token to the user email
+        let receiverEmail //for receivers email
 
-                if(findUser){
-                    const user = findUser //store the findUser in to a new variable
-                    let {email} = user.personalInfo //get the email from database
+        const {email} = req.body //get the email from body
+      
+        const user = await Student.aggregate([
+            {
+               $lookup:
+                  {
+                     from: "Teacher",
+                     localField: "email",
+                     foreignField: "email",
+                     as: "enrollee_info"
+                 }
+            }
+         ]) //get the user from 2 collection
+
+            if(user){
+                   let {email} = user.email //get the email from database
                     const {_id} = user
                     const tokenData = {
                         id: user._id,
                         useType: user.userType 
                     }//recovery mail token data
-                    let token = jwt.sign(tokenData, securityKey, {expiresIn: "15m"}) //store the user id into a token which is valid within 15 min
+                    let token = jwt.sign(tokenData, securityKey, {expiresIn: "55m"}) //store the user id into a token which is valid within 15 min
                     //store the token to the user schema
                     await Admin.findByIdAndUpdate(
                         {
@@ -341,71 +345,9 @@ const forgotPasswordController = async (req, res) => {
                     )
                     receiverEmail = email //store the receiver email 
                     recoveryToken = token 
-                }
-            }else if(userType == "teacher"){   //if this is an teacher
-                const findUser = await Teacher.findOne(
-                    {
-                        "personalInfo.email": email //query by the email
-                    }
-                ) //query and find the user from data base
-
-                if(findUser){
-                    const user = findUser //store the findUser in to a new variable
-                    let {email} = user.personalInfo //get the email from database
-                    const {_id} = user //take the id from user of data base
-                    const tokenData = {
-                        id: user._id,
-                        useType: user.userType 
-                    }//recovery mail token data
-                    let token = jwt.sign(tokenData, securityKey, {expiresIn: "15m"}) //store the user id into a token which is valid within 15 min
-                    //store the token to the user schema
-                    await Teacher.findByIdAndUpdate(
-                        {
-                            _id//get the user by id from admin
-                        },
-                        {
-                            recoveryToken: token //insert the token
-                        },
-                        {} //option
-                    )
-                    receiverEmail = email //store the receiver email 
-                    recoveryToken = token 
-                }
-            }else if(userType == "student"){     //if this is an teacher
-                const findUser = await Student.findOne(
-                    {
-                        "personalInfo.email": email //query by the email
-                    }
-                ) //query and find the user from data base]
-
-                if(findUser){
-                    const user = findUser //store the findUser in to a new variable
-                    
-                    let {email} = user.personalInfo //get the email from database
-                    const {_id} = user
-                    console.log(_id);
-                    const tokenData = {
-                        id: user._id,
-                        useType: user.userType 
-                    }//recovery mail token data
-                    let token = jwt.sign(tokenData, securityKey, {expiresIn: "15m"}) //store the user id into a token which is valid within 15 min
-                    //store the token to the user schema
-                    await Student.findByIdAndUpdate(
-                        {
-                            _id//get the user by id from admin
-                        },
-                        {
-                            recoveryToken: token //insert the token
-                        },
-                        {} //option
-                    )
-                    receiverEmail = email //store the receiver email 
-                    recoveryToken = token 
-                }
-            }
-        }else{
+            }else{
             res.status(404).json({
-                "message": "user not found"
+                "message": "You are not a user"
             })
         }
         
@@ -417,9 +359,10 @@ const forgotPasswordController = async (req, res) => {
                 pass: password
             }
         }) //transporter part
+
         //mailOption part
         const mailOption = {
-            from: 'sadmanishopnil@gmail.com', // sender address
+            from: 'hmdiftakher@gmail.com', // sender email
             to: receiverEmail, // list of receivers
             subject: "reset password", // Subject line
             html: `<h3>You verification token is</h3> 
@@ -808,30 +751,6 @@ const viewOwnProfileController = async (req, res) => {
     }
 }
 
-// const profileImageChangeController = async (req ,res)=>{
-//     try{
-//         const data = await Student.findByIdAndUpdate(
-//             {_id:req.params.id},
-//             { $set:{
-//                 profileImage : req.file.fileName
-//                 }
-//             },
-//             {new: true, useFindAndModify: false}
-//             );
-//             res.status(200).json({
-//                 message: 'Profile Image updated success',
-//                 result : data
-//             })
-
-//     }catch(err){
-//         console.log(err)
-//         res.status(500).json({
-//             message : "server error pi",
-//             err
-//         })
-//     }
-// }
-//export part 
 module.exports = {
     loginController,
     updatePasswordController,

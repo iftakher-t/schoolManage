@@ -3,7 +3,7 @@ const Joi = require("joi")
 //update password
 const passwordValidation = Joi.object({
     newPassword: Joi.string().required().pattern(new RegExp ('^[a-zA-Z0-9]{6,30}$')),
-    confirmPassword: Joi.ref("newPassword"),
+    confirmPassword: Joi.string().required().pattern(new RegExp ('^[a-zA-Z0-9]{6,30}$')),
     oldPassword: Joi.string().required().pattern(new RegExp ('^[a-zA-Z0-9]{6,30}$'))
 })
 
