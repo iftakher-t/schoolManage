@@ -10,6 +10,7 @@ const studentSchema = new Schema({
     FathersName: String,
     MothersName: String,
     gender: String,
+    roll:{ type: String, unique: true , trim: true },
     email: { type: String, unique: true , trim: true },
     dateOfBirth:{ type: Date},
     contact:{

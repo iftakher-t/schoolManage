@@ -6,28 +6,29 @@ const Student = require('../models/Student')
 
 const admitSingleStudentController = async (req ,res)=>{
     try{
-        const splitedDateOfBirth = personalInfo.dateOfBirth.split("-")
+        const {dateOfBirth, roll} = req.body
+        const splitedDateOfBirth = dateOfBirth.split("-")
         const birthYear =  splitedDateOfBirth[0]
         const birthDate = splitedDateOfBirth[splitedDateOfBirth.length - 1]
 
-        //format of user id is (BirthDate - userID - BirthYear)
-        const generateUserId = `${birthDate}${userId}${birthYear}` //get the new user id
-        
-        //creat the student
+        const UserId = `${birthDate}${ Math.round(Math.random()*10)}${birthYear}${roll}` //format (BirthDate - userID - BirthYear)
+        console.log(UserId)
 
+        //create the new student
         const student = new Student( {
             ...req.body,
-            userId: generateUserId,
-            profileImage : req.file.fileName
+            userId: UserId,
+            //profileImage : req.file.fileName
             }
             )
 
-        let data = await student.save();
+        await student.save();
             res.status(201).json({
                 message: 'student added successfully',
             })
     
     }catch(err){
+        console.log(err)
         res.status(500).json({ err })
     }
 }

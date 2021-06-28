@@ -312,19 +312,19 @@ const forgotPasswordController = async (req, res) => {
         let receiverEmail //for receivers email
 
         const {email} = req.body //get the email from body
-      
-        const user = await Student.aggregate([
-            {
-               $lookup:
-                  {
-                     from: "Teacher",
-                     localField: "email",
-                     foreignField: "email",
-                     as: "enrollee_info"
-                 }
-            }
-         ]) //get the user from 2 collection
+        let user
+        let teacher = await Teacher.findOne({email});
+        if(teacher) user = teacher;
+        else {
+            user = await Student.findOne({email});
+        }
 
+        // if(!user){
+        //  user = await Student.findOne({email}) //get the user from 2 collection
+        // }else{
+        //  user = await Teacher.findOne({email}) //get the user from 2 collection
+        // }
+    console.log("User is " + user)
             if(user){
                    let {email} = user.email //get the email from database
                     const {_id} = user
@@ -335,11 +335,9 @@ const forgotPasswordController = async (req, res) => {
                     let token = jwt.sign(tokenData, securityKey, {expiresIn: "55m"}) //store the user id into a token which is valid within 15 min
                     //store the token to the user schema
                     await Admin.findByIdAndUpdate(
-                        {
-                            _id //get the user by id from admin
+                        { _id //get the user by id from admin
                         },
-                        {
-                            recoveryToken: token //insert the token
+                        { recoveryToken: token //insert the token
                         },
                         {} //option
                     )

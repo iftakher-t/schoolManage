@@ -23,7 +23,7 @@ const {
         allTeacherGetController
     } = require('../controllers/teacherController')
 
-    router.post('/admit',fileuploader.single('image') ,permission(['admin']), admitSingleStudentController) //fileUploader.fields([{'bookimage'}]), problem 
+    router.post('/admit',fileuploader.single('image') , admitSingleStudentController) //fileUploader.fields([{'bookimage'}]), problem,,  permission(['admin']),
     router.put('/update/:id',permission(['admin','teacher']), updateStudentInfoController)
     router.delete('/deletestudent/:id',permission(['admin','teacher']), studentDeleteController) // temporary
     // router.delete('/deleteteacher/:id',permission(['admin','teacher']), teacherDeleteController) // temporary
