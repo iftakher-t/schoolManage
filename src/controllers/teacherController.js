@@ -155,3 +155,16 @@ module.exports = {
     //resultGetController
 
             }
+// delete permanent
+// router.delete("/:id", async (req, res) => {
+  // if (req.body.userId === req.params.id || req.body.isAdmin) {
+//     try {
+//       await Ads.findByIdAndDelete(req.params.id);
+//       res.status(200).json("Ads has been deleted");
+//     } catch (err) {
+//       return res.status(500).json(err);
+//     }
+  // } else {
+  //   return res.status(403).json("You can delete only your ads!");
+  // }
+// });
